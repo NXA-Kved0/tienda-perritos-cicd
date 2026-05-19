@@ -1,0 +1,144 @@
+/* style.css - Versión Arcoíris para Tienda de Perritos */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+header {
+  background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+  color: white;
+  padding: 30px 16px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  animation: rgbShadow 3s infinite alternate;
+}
+
+@keyframes rgbShadow {
+  0% { text-shadow: 2px 2px 8px red; }
+  20% { text-shadow: 2px 2px 8px orange; }
+  40% { text-shadow: 2px 2px 8px yellow; }
+  60% { text-shadow: 2px 2px 8px green; }
+  80% { text-shadow: 2px 2px 8px blue; }
+  100% { text-shadow: 2px 2px 8px violet; }
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+  animation: titleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+  from { text-shadow: 0 0 5px red; }
+  to { text-shadow: 0 0 20px violet; }
+}
+
+main {
+  max-width: 1200px;
+  margin: 30px auto;
+  background: rgba(255,255,255,0.95);
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  border: 3px solid transparent;
+  animation: borderRainbow 4s infinite alternate;
+}
+
+@keyframes borderRainbow {
+  0% { border-color: #ff0000; box-shadow: 0 0 20px #ff0000; }
+  25% { border-color: #ff7f00; box-shadow: 0 0 20px #ff7f00; }
+  50% { border-color: #00ff00; box-shadow: 0 0 20px #00ff00; }
+  75% { border-color: #0000ff; box-shadow: 0 0 20px #0000ff; }
+  100% { border-color: #9400d3; box-shadow: 0 0 20px #9400d3; }
+}
+
+h2 {
+  background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+  color: #fff;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+button.secondary {
+  background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+  color: #1e3c72;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 2px solid #ffb347;
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background: linear-gradient(135deg, #FF512F, #DD2476);
+  color: white;
+}
+
+tr:nth-child(even) {
+  background: #fff0e7;
+}
+
+tr:hover {
+  background: #ffe6f0;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px solid #ff9966;
+  background: #fffaf2;
+  box-sizing: border-box;
+}
+
+input:focus, textarea:focus {
+  border-color: #ff5e62;
+  box-shadow: 0 0 10px #ff5e62;
+  outline: none;
+}
+
+.status {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.status.ok {
+  background: #d4fc79;
+  color: #1a5d1a;
+}
+
+.status.error {
+  background: #ff9a9e;
+  color: #8b0000;
+}

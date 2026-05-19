@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tienda de Alimentos para Perritos ;</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+  
+</head>
+<body>
+  <header>
+    <img src="giphy.gif" alt="perrito" style="position:absolute; top:10px; left:10px; width:80px; height:80px;">
+
+    <h1>Tienda de Alimentos para Perritos ;</h1>
+    <p>Aprobado por expertos en mover la cola</p>
+  </header>
+  <main>
+    <section>
+      <h2>Productos</h2>
+      <div class="actions">
+        <button id="btnCargar">Cargar Productos</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyProductos">
+          <!-- Aqu�� se insertan filas dinamicamente -->
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2 id="formTitle">Nuevo producto</h2>
+      <div class="form-grid">
+        <div>
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" placeholder="Ej: Alimento Premium Cachorro" />
+        </div>
+        <div>
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" rows="2" placeholder="Ej: Sabor pollo, razas pequeñas"></textarea>
+        </div>
+        <div>
+          <label for="precio">Precio</label>
+          <input type="number" id="precio" step="0.01" min="0" placeholder="Ej: 19990" />
+        </div>
+        <div>
+          <label for="stock">Stock</label>
+          <input type="number" id="stock" min="0" placeholder="Ej: 10" />
+        </div>
+      </div>
+      <div class="actions" style="margin-top: 12px;">
+        <button id="btnGuardar">Guardar</button>
+        <button id="btnCancelar" class="secondary">Cancelar</button>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
