@@ -1,0 +1,242 @@
+
+EXPLICACIONES TÉCNICAS — PRESENTACIÓN DEVOPS AWS
+
+1. ¿QUÉ ES DOCKER?
+
+Docker es una plataforma de contenedorización que permite empaquetar una aplicación junto con todas sus dependencias y configuraciones.
+
+Esto garantiza que el software funcione igual en cualquier entorno:
+- desarrollo,
+- testing,
+- producción.
+
+Docker resuelve el problema clásico:
+“En mi máquina funciona”.
+
+------------------------------------------------------------
+
+2. DIFERENCIA ENTRE IMAGEN Y CONTENEDOR
+
+IMAGEN:
+Es una plantilla inmutable que contiene:
+- sistema operativo base,
+- dependencias,
+- código,
+- configuraciones.
+
+Se construye mediante:
+docker build
+
+CONTENEDOR:
+Es una instancia en ejecución de una imagen Docker.
+
+Se ejecuta mediante:
+docker run
+
+------------------------------------------------------------
+
+3. ¿QUÉ HACE EL DOCKERFILE?
+
+El Dockerfile es la receta utilizada para construir imágenes Docker.
+
+Ejemplo del backend:
+
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --production
+COPY . .
+EXPOSE 3001
+CMD ["npm", "start"]
+
+Explicación:
+- node:18-alpine → imagen liviana basada en Alpine Linux.
+- WORKDIR → define directorio de trabajo.
+- COPY → copia archivos al contenedor.
+- RUN → ejecuta instalación de dependencias.
+- EXPOSE → documenta el puerto.
+- CMD → inicia la aplicación.
+
+------------------------------------------------------------
+
+4. ¿QUÉ ES DOCKER COMPOSE?
+
+Docker Compose permite orquestar múltiples contenedores como una sola aplicación.
+
+Sin compose:
+- frontend
+- backend
+- mysql
+
+deberían ejecutarse manualmente.
+
+Con compose:
+docker compose up
+
+levanta toda la arquitectura automáticamente.
+
+------------------------------------------------------------
+
+5. ¿CÓMO SE COMUNICAN LOS CONTENEDORES?
+
+Docker Compose crea una red virtual interna.
+
+Cada contenedor obtiene:
+- IP privada interna,
+- resolución DNS automática.
+
+Por eso backend puede conectarse a MySQL usando el nombre del servicio:
+DB_HOST=db
+
+sin utilizar IPs manuales.
+
+------------------------------------------------------------
+
+6. ¿QUÉ ES PERSISTENCIA DE DATOS?
+
+Los contenedores Docker son efímeros.
+
+Si se elimina un contenedor MySQL:
+también podrían perderse los datos.
+
+Por eso se utilizan Docker Volumes.
+
+Ejemplo:
+-v dbdata:/var/lib/mysql
+
+dbdata:
+es el volumen persistente.
+
+/var/lib/mysql:
+es el directorio interno donde MySQL guarda físicamente:
+- tablas,
+- registros,
+- índices,
+- datos.
+
+Esto permite conservar información incluso si el contenedor se reinicia o recrea.
+
+------------------------------------------------------------
+
+7. ¿QUÉ ES AMAZON ECR?
+
+Amazon ECR (Elastic Container Registry) es un repositorio privado de imágenes Docker en AWS.
+
+Funciona similar a Docker Hub, pero integrado con AWS.
+
+Flujo:
+docker build
+→ docker tag
+→ docker push ECR
+→ EC2 realiza docker pull
+
+------------------------------------------------------------
+
+8. ¿QUÉ HACE GITHUB ACTIONS?
+
+GitHub Actions automatiza tareas DevOps.
+
+En este proyecto:
+- detecta cambios,
+- construye imágenes Docker,
+- publica imágenes en ECR,
+- despliega automáticamente en EC2.
+
+Esto elimina despliegues manuales.
+
+------------------------------------------------------------
+
+9. ¿QUÉ ES AWS SYSTEMS MANAGER (SSM)?
+
+AWS Systems Manager permite ejecutar comandos remotamente sobre instancias EC2 sin conectarse manualmente por SSH.
+
+Ventajas:
+- mayor seguridad,
+- automatización,
+- trazabilidad,
+- no requiere abrir puerto 22 públicamente.
+
+------------------------------------------------------------
+
+10. ¿QUÉ HACE NGINX?
+
+Nginx es un servidor web utilizado para servir archivos estáticos:
+- HTML,
+- CSS,
+- JavaScript.
+
+Es rápido, liviano y eficiente.
+
+------------------------------------------------------------
+
+11. ¿QUÉ HACE EXPRESS?
+
+Express es un framework backend para Node.js.
+
+Permite:
+- crear APIs REST,
+- manejar rutas,
+- procesar solicitudes HTTP,
+- conectarse con MySQL.
+
+------------------------------------------------------------
+
+12. ¿QUÉ ES CI/CD?
+
+CI:
+Continuous Integration.
+
+Automatiza validación e integración del código.
+
+CD:
+Continuous Deployment.
+
+Automatiza despliegues hacia producción.
+
+Beneficios:
+- menos errores humanos,
+- despliegues rápidos,
+- mayor trazabilidad.
+
+------------------------------------------------------------
+
+13. ¿POR QUÉ SEPARAR FRONTEND, BACKEND Y DB?
+
+Porque permite:
+- escalabilidad independiente,
+- mejor mantenimiento,
+- aislamiento de fallos,
+- reinicios independientes,
+- arquitectura desacoplada.
+
+------------------------------------------------------------
+
+14. PREGUNTAS TÍPICAS Y RESPUESTAS
+
+¿Por qué usar Docker?
+- Portabilidad
+- Consistencia
+- Escalabilidad
+- Aislamiento
+
+¿Por qué usar Alpine?
+- Menor tamaño
+- Menor consumo
+- Menor superficie de ataque
+
+¿Qué pasa si cae el backend?
+- Frontend sigue funcionando parcialmente.
+- Fallan operaciones dinámicas.
+
+¿Qué pasa si EC2 reinicia?
+- Los contenedores pueden levantarse nuevamente.
+- El volumen conserva los datos.
+
+¿Por qué usar GitHub Secrets?
+- Para evitar exponer credenciales AWS en el repositorio.
+
+------------------------------------------------------------
+
+15. FRASE TÉCNICA FINAL
+
+“El principal valor técnico del proyecto fue transformar un despliegue manual en una infraestructura automatizada, reproducible y desacoplada mediante contenedores Docker y prácticas CI/CD.”

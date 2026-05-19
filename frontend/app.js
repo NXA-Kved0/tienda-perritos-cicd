@@ -5,9 +5,9 @@
 // Determinar la URL base de la API según el host
 // frontend/app.js
 
-const API_BASE = "http://107.23.230.65:3001/api/productos";
+const API_BASE = "http://32.197.245.198";
 
-// Ejemplo: const API_BASE = "http://10.0.2.30:3001/api/productos";
+
 
 
 let editandoId = null;
