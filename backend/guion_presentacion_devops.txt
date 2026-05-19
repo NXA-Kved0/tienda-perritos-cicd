@@ -1,0 +1,152 @@
+
+GUION PRESENTACIÓN — TIENDA DE PERRITOS DEVOPS AWS
+
+SLIDE 1 — PORTADA
+
+“Buenos días/tardes. Mi nombre es [nombre] y junto a [compañero/a] desarrollamos una solución de contenedorización y despliegue automatizado para Innovatech Chile.
+
+El proyecto corresponde a una Tienda de Alimentos para Perritos desplegada sobre infraestructura AWS, utilizando Docker para la contenerización de servicios, Amazon ECR para el almacenamiento de imágenes y GitHub Actions para automatizar el pipeline de integración y despliegue continuo.”
+
+------------------------------------------------------------
+
+SLIDE 2 — OBJETIVO DEL PROYECTO
+
+“El objetivo principal fue transformar una aplicación tradicional en una solución portable, reproducible y automatizada.
+
+La arquitectura implementada utiliza:
+- Frontend desarrollado con HTML, CSS y JavaScript servido mediante Nginx.
+- Backend construido con Node.js y Express.
+- Base de datos MySQL.
+- Contenedores Docker ejecutados sobre instancias EC2.
+- Imágenes almacenadas en Amazon ECR.
+- Automatización CI/CD mediante GitHub Actions.
+
+Con esto se logró reducir la intervención manual durante los despliegues y garantizar consistencia entre entornos.”
+
+------------------------------------------------------------
+
+SLIDE 3 — ARQUITECTURA DE LA SOLUCIÓN
+
+“La arquitectura se divide en varias capas.
+
+Primero está el entorno de desarrollo local, donde se construyen y prueban los contenedores.
+Luego GitHub funciona como repositorio central y punto de integración del código fuente.
+
+Cada vez que se realiza un push sobre la rama principal, GitHub Actions ejecuta automáticamente el pipeline CI/CD.
+
+El pipeline construye las imágenes Docker y las publica en Amazon ECR, que actúa como registro privado de contenedores.
+
+Posteriormente, mediante AWS Systems Manager, se ejecutan comandos remotos sobre las instancias EC2 para descargar y actualizar los contenedores en producción.
+
+Finalmente, Docker Volumes se utiliza para mantener persistencia de datos en MySQL, y los Security Groups controlan el acceso de red hacia los servicios.”
+
+------------------------------------------------------------
+
+SLIDE 4 — CONTENERIZACIÓN
+
+“Cada servicio fue dockerizado de manera independiente mediante su propio Dockerfile.
+
+En el backend utilizamos una imagen base node:18-alpine, una distribución Linux minimalista que reduce el tamaño de la imagen y mejora el tiempo de despliegue.
+
+El Dockerfile define:
+- directorio de trabajo,
+- copia de dependencias,
+- instalación de paquetes necesarios,
+- exposición del puerto 3001,
+- y ejecución automática del servidor Node.js.
+
+En la base de datos utilizamos la imagen oficial de MySQL 8, incorporando un script init.sql que inicializa automáticamente la estructura y datos iniciales de la aplicación.”
+
+------------------------------------------------------------
+
+SLIDE 5 — DOCKER COMPOSE
+
+“Docker Compose se utilizó para orquestar la aplicación completa como un solo entorno integrado.
+
+El archivo docker-compose.yml define tres servicios principales:
+- frontend,
+- backend,
+- y base de datos MySQL.
+
+Compose permite levantar todos los servicios simultáneamente mediante un único comando.
+
+Además, Docker crea automáticamente una red interna virtual donde los contenedores pueden comunicarse usando nombres de servicio como hostname, evitando configuraciones manuales de red.”
+
+------------------------------------------------------------
+
+SLIDE 6 — PERSISTENCIA DE DATOS
+
+“Para garantizar persistencia utilizamos Docker Volumes en el contenedor MySQL.
+
+Esto significa que los datos quedan almacenados fuera del ciclo de vida del contenedor.
+
+Por lo tanto, si el contenedor se reinicia, actualiza o elimina, la información de productos permanece intacta.
+
+Elegimos volúmenes Docker porque son más portables y fáciles de administrar en comparación con rutas físicas dependientes del sistema operativo.”
+
+------------------------------------------------------------
+
+SLIDE 7 — SECURITY GROUPS
+
+“Los Security Groups fueron configurados para controlar el acceso a la infraestructura.
+
+El puerto 80 quedó expuesto públicamente para permitir acceso al frontend desde navegador.
+
+En cambio, los puertos internos utilizados por backend y base de datos fueron restringidos únicamente a la red privada interna, reduciendo la superficie de ataque y mejorando la seguridad del despliegue.”
+
+------------------------------------------------------------
+
+SLIDE 8 — PIPELINE CI/CD
+
+“El pipeline CI/CD fue implementado utilizando GitHub Actions.
+
+Cada workflow se activa automáticamente cuando existe un cambio en determinados directorios del repositorio.
+
+El flujo consta de tres etapas principales:
+1. Construcción de la imagen Docker.
+2. Publicación de la imagen en Amazon ECR.
+3. Despliegue automático sobre EC2.
+
+El despliegue remoto se realiza mediante AWS Systems Manager, lo que permite ejecutar comandos sobre las instancias sin necesidad de acceso SSH manual.
+
+Las credenciales sensibles se almacenaron mediante GitHub Secrets para evitar exposición directa en el código.”
+
+------------------------------------------------------------
+
+SLIDE 9 — AWS ECR
+
+“Amazon ECR se utilizó como repositorio privado de imágenes Docker.
+
+Cada servicio mantiene su propia imagen:
+- frontend,
+- backend,
+- y base de datos.
+
+Esto permite centralizar y versionar las imágenes utilizadas en producción, facilitando actualizaciones y rollback en caso de fallos.”
+
+------------------------------------------------------------
+
+SLIDE 10 — EC2
+
+“Aquí observamos los contenedores ejecutándose en producción mediante el comando docker ps.
+
+Se encuentran activos:
+- frontend Nginx,
+- backend Node.js,
+- y base de datos MySQL.
+
+Además, el frontend puede accederse desde navegador mediante la IP pública de la instancia EC2.”
+
+------------------------------------------------------------
+
+SLIDE 11 — CONCLUSIÓN
+
+“En conclusión, logramos implementar una solución completamente contenerizada y desplegada sobre AWS.
+
+El proyecto automatiza la construcción, publicación y despliegue de servicios, reduciendo tiempos operativos y errores manuales.
+
+Los principales desafíos estuvieron relacionados con la comunicación entre contenedores y la automatización segura del despliegue.
+
+Como resultado, Innovatech Chile ahora dispone de una infraestructura reproducible, portable y preparada para futuras escalabilidades.
+
+Muchas gracias. Quedamos atentos a sus preguntas.”
