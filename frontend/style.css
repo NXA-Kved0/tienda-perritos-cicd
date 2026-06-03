@@ -1,17 +1,15 @@
-/* style.css - Versión Elegante para Tienda de Perritos */
+
 
 :root {
-  --primary: #2c3e50;
+  --primary: #30A7D7;
   --primary-light: #34495e;
   --secondary: #e67e22;
   --secondary-light: #f39c12;
   --accent: #1abc9c;
   --background: #ecf0f1;
   --card-bg: #ffffff;
-  --text-dark: #2c3e50;
+  --text-dark: #30A7D7;
   --text-light: #7f8c8d;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
 body {
@@ -99,13 +97,12 @@ button {
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
 }
 
 button:hover {
   background: var(--secondary-light);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
 }
 
 button:active {
@@ -259,7 +256,7 @@ label {
   margin-top: 20px;
 }
 
-/* Responsive */
+/* Responsiv */
 @media (max-width: 768px) {
   header h1 {
     font-size: 1.8rem;
@@ -285,3 +282,5 @@ label {
     grid-template-columns: 1fr;
   }
 }
+
+/*FOOTER*/
