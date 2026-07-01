@@ -1,22 +1,23 @@
 name: CI/CD Tienda Perritos - EKS
-
+name: CI/CD Tienda Perritos - EKS
+ 
 on:
   push:
     branches: [ "main" ]
-
+ 
 jobs:
-
+ 
   # ─────────────────────────────────────────
   # JOB 1: Build y Push Frontend a ECR
   # ─────────────────────────────────────────
   build-frontend:
     name: Build y Push Frontend
     runs-on: ubuntu-latest
-
+ 
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
-
+ 
       - name: Configurar credenciales AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -24,10 +25,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
-
+ 
       - name: Login en Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-
+ 
       - name: Build y Push imagen Frontend
         run: |
           docker build -t tienda-frontend ./frontend
@@ -35,18 +36,18 @@ jobs:
           docker tag tienda-frontend:latest ${{ secrets.ECR_URL }}/tienda-frontend:latest
           docker push ${{ secrets.ECR_URL }}/tienda-frontend:${{ github.sha }}
           docker push ${{ secrets.ECR_URL }}/tienda-frontend:latest
-
+ 
   # ─────────────────────────────────────────
   # JOB 2: Build y Push Backend a ECR
   # ─────────────────────────────────────────
   build-backend:
     name: Build y Push Backend
     runs-on: ubuntu-latest
-
+ 
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
-
+ 
       - name: Configurar credenciales AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -54,10 +55,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
-
+ 
       - name: Login en Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-
+ 
       - name: Build y Push imagen Backend
         run: |
           docker build -t tienda-backend ./backend
@@ -65,7 +66,7 @@ jobs:
           docker tag tienda-backend:latest ${{ secrets.ECR_URL }}/tienda-backend:latest
           docker push ${{ secrets.ECR_URL }}/tienda-backend:${{ github.sha }}
           docker push ${{ secrets.ECR_URL }}/tienda-backend:latest
-
+ 
   # ─────────────────────────────────────────
   # JOB 3: Deploy en EKS (después de los builds)
   # ─────────────────────────────────────────
@@ -73,11 +74,11 @@ jobs:
     name: Deploy en EKS
     runs-on: ubuntu-latest
     needs: [build-frontend, build-backend]
-
+ 
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
-
+ 
       - name: Configurar credenciales AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -85,42 +86,42 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
-
+ 
       - name: Instalar kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'latest'
-
+ 
       - name: Conectar al clúster EKS
         run: |
           aws eks update-kubeconfig \
             --region ${{ secrets.AWS_REGION }} \
             --name ${{ secrets.EKS_CLUSTER_NAME }}
-
+ 
       - name: Actualizar imagen Frontend en EKS
         run: |
           kubectl set image deployment/tienda-frontend \
-            tienda-frontend=${{ secrets.ECR_URL }}/tienda-frontend:${{ github.sha }} \
+            frontend=${{ secrets.ECR_URL }}/tienda-frontend:${{ github.sha }} \
             -n tienda
-
+ 
       - name: Actualizar imagen Backend en EKS
         run: |
           kubectl set image deployment/tienda-backend \
-            tienda-backend=${{ secrets.ECR_URL }}/tienda-backend:${{ github.sha }} \
+            backend=${{ secrets.ECR_URL }}/tienda-backend:${{ github.sha }} \
             -n tienda
-
+ 
       - name: Esperar rollout Frontend
         run: |
           kubectl rollout status deployment/tienda-frontend \
             -n tienda \
             --timeout=300s
-
+ 
       - name: Esperar rollout Backend
         run: |
           kubectl rollout status deployment/tienda-backend \
             -n tienda \
             --timeout=300s
-
+ 
       - name: Verificar pods desplegados
         run: |
           echo "=== PODS ==="
