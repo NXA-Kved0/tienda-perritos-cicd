@@ -113,13 +113,13 @@ jobs:
         run: |
           kubectl rollout status deployment/tienda-frontend \
             -n tienda \
-            --timeout=300s
+            --timeout=600s
 
       - name: Esperar rollout Backend
         run: |
           kubectl rollout status deployment/tienda-backend \
             -n tienda \
-            --timeout=300s
+            --timeout=600s
 
       - name: Verificar pods desplegados
         run: |
