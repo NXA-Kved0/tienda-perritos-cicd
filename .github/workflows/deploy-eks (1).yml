@@ -131,3 +131,7 @@ jobs:
           echo ""
           echo "=== HPA ==="
           kubectl get hpa -n tienda
+
+          - name: Debug - ver imagen del deployment
+        run: |
+          kubectl describe deployment tienda-frontend -n tienda | grep Image
