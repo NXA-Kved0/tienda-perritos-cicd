@@ -28,6 +28,9 @@ jobs:
       - name: Login en Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Normalizar ECR_URL
+        run: echo "ECR_URL=$(echo '${{ secrets.ECR_URL }}' | tr '[:upper:]' '[:lower:]' | sed 's:/*$::')" >> $GITHUB_ENV
+
       - name: Test - Verificar archivos del frontend
         run: |
           test -f frontend/index.html
@@ -39,10 +42,10 @@ jobs:
       - name: Build y Push imagen Frontend
         run: |
           docker build -t tienda-frontend ./frontend
-          docker tag tienda-frontend:latest ${{ secrets.ECR_URL }}/tienda-frontend:${{ github.sha }}
-          docker tag tienda-frontend:latest ${{ secrets.ECR_URL }}/tienda-frontend:latest
-          docker push ${{ secrets.ECR_URL }}/tienda-frontend:${{ github.sha }}
-          docker push ${{ secrets.ECR_URL }}/tienda-frontend:latest
+          docker tag tienda-frontend:latest $ECR_URL/tienda-frontend:${{ github.sha }}
+          docker tag tienda-frontend:latest $ECR_URL/tienda-frontend:latest
+          docker push $ECR_URL/tienda-frontend:${{ github.sha }}
+          docker push $ECR_URL/tienda-frontend:latest
 
   # ─────────────────────────────────────────
   # JOB 2: Build y Push Backend a ECR
@@ -79,13 +82,16 @@ jobs:
       - name: Login en Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Normalizar ECR_URL
+        run: echo "ECR_URL=$(echo '${{ secrets.ECR_URL }}' | tr '[:upper:]' '[:lower:]' | sed 's:/*$::')" >> $GITHUB_ENV
+
       - name: Build y Push imagen Backend
         run: |
           docker build -t tienda-backend ./backend
-          docker tag tienda-backend:latest ${{ secrets.ECR_URL }}/tienda-backend:${{ github.sha }}
-          docker tag tienda-backend:latest ${{ secrets.ECR_URL }}/tienda-backend:latest
-          docker push ${{ secrets.ECR_URL }}/tienda-backend:${{ github.sha }}
-          docker push ${{ secrets.ECR_URL }}/tienda-backend:latest
+          docker tag tienda-backend:latest $ECR_URL/tienda-backend:${{ github.sha }}
+          docker tag tienda-backend:latest $ECR_URL/tienda-backend:latest
+          docker push $ECR_URL/tienda-backend:${{ github.sha }}
+          docker push $ECR_URL/tienda-backend:latest
 
   # ─────────────────────────────────────────
   # JOB 3: Deploy en EKS (después de los builds)
@@ -118,16 +124,19 @@ jobs:
             --region ${{ secrets.AWS_REGION }} \
             --name ${{ secrets.EKS_CLUSTER_NAME }}
 
+      - name: Normalizar ECR_URL
+        run: echo "ECR_URL=$(echo '${{ secrets.ECR_URL }}' | tr '[:upper:]' '[:lower:]' | sed 's:/*$::')" >> $GITHUB_ENV
+
       - name: Actualizar imagen Frontend en EKS
         run: |
           kubectl set image deployment/tienda-frontend \
-            frontend=${{ secrets.ECR_URL }}/tienda-frontend:${{ github.sha }} \
+            frontend=$ECR_URL/tienda-frontend:${{ github.sha }} \
             -n tienda
 
       - name: Actualizar imagen Backend en EKS
         run: |
           kubectl set image deployment/tienda-backend \
-            backend=${{ secrets.ECR_URL }}/tienda-backend:${{ github.sha }} \
+            backend=$ECR_URL/tienda-backend:${{ github.sha }} \
             -n tienda
 
       - name: Esperar rollout Frontend
