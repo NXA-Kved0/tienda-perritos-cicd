@@ -26,10 +26,8 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login en Amazon ECR
+        id: ecr-login
         uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Normalizar ECR_URL
-        run: echo "ECR_URL=$(echo '${{ secrets.ECR_URL }}' | tr '[:upper:]' '[:lower:]' | sed 's:/*$::')" >> $GITHUB_ENV
 
       - name: Test - Verificar archivos del frontend
         run: |
@@ -40,6 +38,8 @@ jobs:
           echo "Test OK: archivos estáticos del frontend presentes"
 
       - name: Build y Push imagen Frontend
+        env:
+          ECR_URL: ${{ steps.ecr-login.outputs.registry }}
         run: |
           docker build -t tienda-frontend ./frontend
           docker tag tienda-frontend:latest $ECR_URL/tienda-frontend:${{ github.sha }}
@@ -80,12 +80,12 @@ jobs:
         run: npm test
 
       - name: Login en Amazon ECR
+        id: ecr-login
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Normalizar ECR_URL
-        run: echo "ECR_URL=$(echo '${{ secrets.ECR_URL }}' | tr '[:upper:]' '[:lower:]' | sed 's:/*$::')" >> $GITHUB_ENV
-
       - name: Build y Push imagen Backend
+        env:
+          ECR_URL: ${{ steps.ecr-login.outputs.registry }}
         run: |
           docker build -t tienda-backend ./backend
           docker tag tienda-backend:latest $ECR_URL/tienda-backend:${{ github.sha }}
@@ -124,8 +124,10 @@ jobs:
             --region ${{ secrets.AWS_REGION }} \
             --name ${{ secrets.EKS_CLUSTER_NAME }}
 
-      - name: Normalizar ECR_URL
-        run: echo "ECR_URL=$(echo '${{ secrets.ECR_URL }}' | tr '[:upper:]' '[:lower:]' | sed 's:/*$::')" >> $GITHUB_ENV
+      - name: Calcular URL de ECR
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "ECR_URL=$ACCOUNT_ID.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_ENV
 
       - name: Actualizar imagen Frontend en EKS
         run: |
