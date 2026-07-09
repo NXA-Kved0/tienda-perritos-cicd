@@ -1,0 +1,71 @@
+name: Deploy Tienda Perritos to EKS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: tienda-eks
+  ECR_REGISTRY: 170098508847.dkr.ecr.us-east-1.amazonaws.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.P_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.P_AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.P_AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.P_AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+
+      - name: Build and push frontend
+        run: |
+          docker build --no-cache -t tienda-perritos-cicd-frontend:latest ./frontend
+          docker tag tienda-perritos-cicd-frontend:latest $ECR_REGISTRY/tienda-front:latest
+          docker push $ECR_REGISTRY/tienda-front:latest
+
+      - name: Build and push backend
+        run: |
+          docker build --no-cache -t tienda-perritos-cicd-backend:latest ./backend
+          docker tag tienda-perritos-cicd-backend:latest $ECR_REGISTRY/tienda-back:latest
+          docker push $ECR_REGISTRY/tienda-back:latest
+
+      - name: Build and push database
+        run: |
+          docker build --no-cache -t tienda-perritos-cicd-db:latest ./db
+          docker tag tienda-perritos-cicd-db:latest $ECR_REGISTRY/tienda-db:latest
+          docker push $ECR_REGISTRY/tienda-db:latest
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/tienda.k8s.yaml
+
+      - name: Restart deployments
+        run: |
+          kubectl rollout restart deployment tienda-frontend -n tienda
+          kubectl rollout restart deployment tienda-backend -n tienda
+          kubectl rollout restart deployment tienda-db -n tienda
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment tienda-frontend -n tienda
+          kubectl rollout status deployment tienda-backend -n tienda
+          kubectl get pods -n tienda
+          kubectl get svc -n tienda
+          kubectl get hpa -n tienda
